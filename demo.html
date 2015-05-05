@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>&lt;pk-datepicker&gt;</title>
+    <script>//Polymer = {dom: 'shadow'};</script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="pk-datepicker.html">
+    <link rel="import" href="bower_components/i18n-msg/i18n-msg.html">
+
+    <style type="text/css">
+        pk-datepicker {
+            width: 320px;
+            font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+        }
+    </style>
+    <script type="text/javascript">
+        document.addEventListener('HTMLImportsLoaded', function() {
+            I18nMsg.lang = 'de';
+        });
+    </script>
+</head>
+<body>
+    <pk-datepicker month="4"></pk-datepicker>
+    <pk-datepicker month="3"></pk-datepicker>
+</body>
+</html>

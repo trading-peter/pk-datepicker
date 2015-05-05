@@ -1,0 +1,230 @@
+<!-- Import Polymer -->
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/fa-awesome/fa-awesome.html">
+<link rel="import" href="bower_components/i18n-msg/i18n-msg.html">
+<link rel="import" href="bower_components/layout/layout.html">
+
+<!-- Define your custom element -->
+<dom-module id="pk-datepicker">
+    <style>
+        :host {
+            display: block;
+            min-width: 320px;
+        }
+
+        #header {
+            height: 40px;
+            line-height: 40px;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        #header > * {
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        #header > fa-awesome:hover {
+            cursor: pointer;
+            color: #BC5005;
+        }
+
+        #header .go-today {
+            padding: 0px 5px;
+            cursor: pointer;
+        }
+
+        #header .go-today:hover {
+            color: #BC5005;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table td {
+            line-height: 25px;
+            text-align: center;
+            padding: 2px;
+        }
+
+        td > div {
+            display: inline-block;
+            margin: auto;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        td > div:hover {
+            background-color: #FFD67D;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        td > div.today {
+            border-radius: 15px;
+            cursor: pointer;
+            background-color: #BC5005;
+            color: #ffffff;
+        }
+
+    </style>
+    <template>
+        <div id="header" class="layout center horizontal">
+            <fa-awesome on-click="prevHandler" icon="chevron-left"></fa-awesome>
+            <div id="currentMonth" class="flex"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
+            <fa-awesome on-click="nextHandler" icon="chevron-right" label-left></fa-awesome>
+        </div>
+        <div id="calendar" cellpadding="0" cellspacing="0"></div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'pk-datepicker',
+
+        properties: {
+            dayLabels: {
+                type: Array,
+                value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+            },
+            monthLabels: {
+                type: Array,
+                value: ['January', 'February', 'March', 'April',
+                    'May', 'June', 'July', 'August', 'September',
+                    'October', 'November', 'December']
+            },
+            month: {
+                type: Number,
+                value: -1,
+                notify: true
+            },
+            year: {
+                type: Number,
+                value: -1,
+                notify: true
+            }
+        },
+
+        observers: [
+            'dateChanged(month, year)'
+        ],
+
+        attached: function() {
+            this.$.calendar.addEventListener('click', function(e) {
+                if (e.target && e.target.nodeName == 'DIV' && e.target.classList.contains('day')) {
+                    this.fire('date-selected', { year: this.year, month: this.month, day: parseInt(e.target.textContent) });
+                }
+            }.bind(this));
+        },
+
+        detached: function() {
+            this.$.calendar.removeAllListeners('click');
+        },
+
+        nextHandler: function() {
+            this.month = this.month == 11 ? 0 : this.month + 1;
+            this.year = this.month <= 0 ? this.year + 1 : this.year;
+
+            this.currentMonth = this.monthLabels[this.month];
+            this.genTable(this.year, this.month);
+        },
+
+        prevHandler: function() {
+            this.month = this.month <= 0 ? 11 : this.month - 1;
+            this.year = this.month == 11 ? this.year - 1 : this.year;
+
+            this.currentMonth = this.monthLabels[this.month];
+            this.genTable(this.year, this.month);
+        },
+
+        goTodayHandler: function() {
+            this.dateChanged(-1, -1);
+        },
+
+        dateChanged: function(month, year) {
+            var date = new Date();
+
+            if (month < 0 || month > 11) {
+                this.month = date.getMonth();
+            }
+
+            if (year < 0) {
+                this.year = date.getFullYear();
+            }
+
+            this.currentMonth = this.monthLabels[this.month];
+            this.genTable(this.year, this.month);
+        },
+
+        genTable: function(year, month) {
+            var table = document.createElement('table');
+            var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            var lDays = this.dayLabels;
+            var calEl = Polymer.dom(this.$.calendar);
+            var firstDay = new Date(year, month, 1);
+            var startingDay = firstDay.getDay();
+
+            if (startingDay == 0) startingDay = 7;
+            var monthLength = daysInMonth[month];
+
+            var today = new Date();
+            var thisDay = today.getDate();
+            var thisMonth = today.getMonth();
+            var thisYear = today.getFullYear();
+
+            // Handle leap year.
+            if (month == 1) {
+                if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0){
+                    monthLength = 29;
+                }
+            }
+
+            var html = '<thead><tr>';
+            for (var i = 1; i <= 7; i++ ){
+                html += '<th>';
+                html += lDays[i < 7 ? i : 0];
+                html += '</th>';
+            }
+            html += '</tr></thead><tbody><tr>';
+
+            var day = 1;
+            // Loop through weeks.
+            for (var i = 0; i < 9; i++) {
+                // Loop through days.
+                for (var j = 1; j <= 7; j++) {
+                    var i2 = i < 7 ? i : 0;
+                    if (day <= monthLength && (i2 > 0 || j >= startingDay)) {
+                        if (day == thisDay && thisMonth == month && thisYear == year) {
+                            html += '<td><div class="today day">' + day + '</div>';
+                        } else {
+                            html += '<td><div class="day">' + day + '</div>';
+                        }
+                        day++;
+                    } else {
+                        html += '<td class="disabled">';
+                    }
+                    html += '</td>';
+                }
+                // stop making rows if we've run out of days
+                if (day > monthLength) {
+                    break;
+                } else {
+                    html += '</tr><tr>';
+                }
+            }
+
+            html += '</tr></tbody>';
+
+            table.innerHTML = html;
+            this.$.calendar.innerHTML = '';
+            calEl.appendChild(table);
+        }
+    });
+</script>
