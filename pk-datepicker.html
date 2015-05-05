@@ -117,15 +117,17 @@
         ],
 
         attached: function() {
-            this.$.calendar.addEventListener('click', function(e) {
-                if (e.target && e.target.nodeName == 'DIV' && e.target.classList.contains('day')) {
-                    this.fire('date-selected', { year: this.year, month: this.month, day: parseInt(e.target.textContent) });
-                }
-            }.bind(this));
+            this.$.calendar.addEventListener('click', this.selectionHandler.bind(this));
         },
 
         detached: function() {
-            this.$.calendar.removeAllListeners('click');
+            this.$.calendar.removeEventListener('click', this.selectionHandler.bind(this));
+        },
+
+        selectionHandler: function(e) {
+            if (e.target && e.target.nodeName == 'DIV' && e.target.classList.contains('day')) {
+                this.fire('date-selected', { year: this.year, month: this.month, day: parseInt(e.target.textContent) });
+            }
         },
 
         nextHandler: function() {
