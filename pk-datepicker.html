@@ -12,7 +12,7 @@
             min-width: 320px;
         }
 
-        #header {
+        [header] {
             height: 40px;
             line-height: 40px;
 
@@ -24,22 +24,22 @@
             user-select: none;
         }
 
-        #header > * {
+        [header] > * {
             text-align: center;
             padding: 0 10px;
         }
 
-        #header > fa-awesome:hover {
+        [header] > fa-awesome:hover {
             cursor: pointer;
             color: #BC5005;
         }
 
-        #header .go-today {
+        [header] .go-today {
             padding: 0px 5px;
             cursor: pointer;
         }
 
-        #header .go-today:hover {
+        [header] .go-today:hover {
             color: #BC5005;
         }
 
@@ -76,7 +76,7 @@
 
     </style>
     <template>
-        <div id="header" class="layout center horizontal">
+        <div header class="layout center horizontal">
             <fa-awesome on-click="prevHandler" icon="chevron-left"></fa-awesome>
             <div id="currentMonth" class="flex"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
             <fa-awesome on-click="nextHandler" icon="chevron-right" label-left></fa-awesome>
