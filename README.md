@@ -1,5 +1,5 @@
 # pk-datepicker
-Polymer element to pick a date. Compatible with Polymer 0.8-rc.7
+Polymer element to pick a date. Compatible with Polymer ^1.0.0
 
 ## How to use
 

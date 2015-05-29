@@ -2,7 +2,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fa-awesome/fa-awesome.html">
 <link rel="import" href="../i18n-msg/i18n-msg.html">
-<link rel="import" href="../layout/layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <!-- Define your custom element -->
 <dom-module id="pk-datepicker">
@@ -22,6 +22,9 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
         }
 
         [header] > * {
@@ -41,6 +44,10 @@
 
         [header] .go-today:hover {
             color: #BC5005;
+        }
+
+        [header] > #currentMonth {
+            @apply(--layout-flex);
         }
 
         table {
@@ -76,9 +83,9 @@
 
     </style>
     <template>
-        <div header class="layout center horizontal">
+        <div header>
             <fa-awesome on-click="prevHandler" icon="chevron-left"></fa-awesome>
-            <div id="currentMonth" class="flex"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
+            <div id="currentMonth"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
             <fa-awesome on-click="nextHandler" icon="chevron-right" label-left></fa-awesome>
         </div>
         <div id="calendar" cellpadding="0" cellspacing="0"></div>
