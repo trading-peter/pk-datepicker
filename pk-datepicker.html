@@ -6,7 +6,6 @@ Or see the LICENSE file that comes with this code.
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fa-awesome/fa-awesome.html">
-<link rel="import" href="../i18n-msg/i18n-msg.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <!--
@@ -99,9 +98,9 @@ Example:
     </style>
     <template>
         <div header>
-            <fa-awesome on-click="prevHandler" icon="chevron-left"></fa-awesome>
-            <div id="currentMonth"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
-            <fa-awesome on-click="nextHandler" icon="chevron-right" label-left></fa-awesome>
+            <fa-awesome on-click="_prevHandler" icon="chevron-left"></fa-awesome>
+            <div id="currentMonth"><span>{{currentMonth}}</span>, <span>{{year}}</span> <fa-awesome on-click="_goTodayHandler" class="go-today" icon="calendar" label-left></fa-awesome></div>
+            <fa-awesome on-click="_nextHandler" icon="chevron-right" label-left></fa-awesome>
         </div>
         <div id="calendar" cellpadding="0" cellspacing="0"></div>
     </template>
@@ -151,23 +150,17 @@ Example:
         },
 
         observers: [
-            'dateChanged(month, year)'
+            '_dateChanged(month, year)'
         ],
 
         // Element Lifecycle
 
         attached: function() {
-            this.$.calendar.addEventListener('click', this.selectionHandler.bind(this));
+            this.$.calendar.addEventListener('click', this._selectionHandler.bind(this));
         },
 
         detached: function() {
-            this.$.calendar.removeEventListener('click', this.selectionHandler.bind(this));
-        },
-
-        selectionHandler: function(e) {
-            if (e.target && e.target.nodeName == 'DIV' && e.target.classList.contains('day')) {
-                this.fire('date-selected', { year: this.year, month: this.month, day: parseInt(e.target.textContent) });
-            }
+            this.$.calendar.removeEventListener('click', this._selectionHandler.bind(this));
         },
 
         // Element Behavior
@@ -177,32 +170,41 @@ Example:
          */
 
         /**
+         * Fires the `date-selected` event if some date was selected.
+         */
+        _selectionHandler: function(e) {
+            if (e.target && e.target.nodeName == 'DIV' && e.target.classList.contains('day')) {
+                this.fire('date-selected', { year: this.year, month: this.month, day: parseInt(e.target.textContent) });
+            }
+        },
+
+        /**
          * Show the next month.
          */
-        nextHandler: function() {
+        _nextHandler: function() {
             this.month = this.month == 11 ? 0 : this.month + 1;
             this.year = this.month <= 0 ? this.year + 1 : this.year;
 
             this.currentMonth = this.monthLabels[this.month];
-            this.genTable(this.year, this.month);
+            this._genTable(this.year, this.month);
         },
 
         /**
          * Show the previous month.
          */
-        prevHandler: function() {
+        _prevHandler: function() {
             this.month = this.month <= 0 ? 11 : this.month - 1;
             this.year = this.month == 11 ? this.year - 1 : this.year;
 
             this.currentMonth = this.monthLabels[this.month];
-            this.genTable(this.year, this.month);
+            this._genTable(this.year, this.month);
         },
 
         /**
          * Switch to current month.
          */
-        goTodayHandler: function() {
-            this.dateChanged(-1, -1);
+        _goTodayHandler: function() {
+            this._dateChanged(-1, -1);
         },
 
         /**
@@ -210,7 +212,7 @@ Example:
          * @param month
          * @param year
          */
-        dateChanged: function(month, year) {
+        _dateChanged: function(month, year) {
             var date = new Date();
 
             if (month < 0 || month > 11) {
@@ -222,7 +224,7 @@ Example:
             }
 
             this.currentMonth = this.monthLabels[this.month];
-            this.genTable(this.year, this.month);
+            this._genTable(this.year, this.month);
         },
 
         /**
@@ -230,7 +232,7 @@ Example:
          * @param year
          * @param month
          */
-        genTable: function(year, month) {
+        _genTable: function(year, month) {
             var table = document.createElement('table');
             var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
             var lDays = this.dayLabels;
