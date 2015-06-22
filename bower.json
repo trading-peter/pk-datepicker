@@ -1,6 +1,6 @@
 {
   "name": "pk-datepicker",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Custom element to pick a date and a time. Created with polymer.",
   "license": "MIT",
   "main": "dist/pk-datepicker.html",
