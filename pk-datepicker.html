@@ -1,10 +1,25 @@
-<!-- Import Polymer -->
+<!--
+@license
+Copyright (c) 2015 Peter Kaske <p.kaske@gmail.com>. All rights reserved.
+This code may only be used under the MIT license found at http://opensource.org/licenses/MIT.
+Or see the LICENSE file that comes with this code.
+-->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../fa-awesome/fa-awesome.html">
 <link rel="import" href="../i18n-msg/i18n-msg.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
-<!-- Define your custom element -->
+<!--
+`pk-datepicker` show a simple calendar and let's you pick a date.
+
+Example:
+
+    <pk-datepicker></pk-datepicker>
+
+@group GUI Elements
+@element pk-timepicker
+@demo demo/index.html
+-->
 <dom-module id="pk-datepicker">
     <style>
         :host {
@@ -97,21 +112,37 @@
         is: 'pk-datepicker',
 
         properties: {
+
+            /**
+             * This property can be used to localize the elements day labels.
+             */
             dayLabels: {
                 type: Array,
                 value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             },
+
+            /**
+             * This property can be used to localize the elements month labels.
+             */
             monthLabels: {
                 type: Array,
                 value: ['January', 'February', 'March', 'April',
                     'May', 'June', 'July', 'August', 'September',
                     'October', 'November', 'December']
             },
+
+            /**
+             * The currently selected month.
+             */
             month: {
                 type: Number,
                 value: -1,
                 notify: true
             },
+
+            /**
+             * The currently selected year.
+             */
             year: {
                 type: Number,
                 value: -1,
@@ -122,6 +153,8 @@
         observers: [
             'dateChanged(month, year)'
         ],
+
+        // Element Lifecycle
 
         attached: function() {
             this.$.calendar.addEventListener('click', this.selectionHandler.bind(this));
@@ -137,6 +170,15 @@
             }
         },
 
+        // Element Behavior
+
+        /**
+         * The `date-selected` event is fired whenever a date was selected.
+         */
+
+        /**
+         * Show the next month.
+         */
         nextHandler: function() {
             this.month = this.month == 11 ? 0 : this.month + 1;
             this.year = this.month <= 0 ? this.year + 1 : this.year;
@@ -145,6 +187,9 @@
             this.genTable(this.year, this.month);
         },
 
+        /**
+         * Show the previous month.
+         */
         prevHandler: function() {
             this.month = this.month <= 0 ? 11 : this.month - 1;
             this.year = this.month == 11 ? this.year - 1 : this.year;
@@ -153,10 +198,18 @@
             this.genTable(this.year, this.month);
         },
 
+        /**
+         * Switch to current month.
+         */
         goTodayHandler: function() {
             this.dateChanged(-1, -1);
         },
 
+        /**
+         * Switch to the right calendar page, based on the set date.
+         * @param month
+         * @param year
+         */
         dateChanged: function(month, year) {
             var date = new Date();
 
@@ -172,6 +225,11 @@
             this.genTable(this.year, this.month);
         },
 
+        /**
+         * Renders the calendar page for the selected date.
+         * @param year
+         * @param month
+         */
         genTable: function(year, month) {
             var table = document.createElement('table');
             var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

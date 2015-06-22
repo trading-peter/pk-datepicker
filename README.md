@@ -3,7 +3,7 @@ Polymer element to pick a date. Compatible with Polymer ^1.0.0
 
 ## How to use
 
-Sorry I don't have a component page for it jet. But just have a look at the demo.html and the documentation below.
+Sorry I don't have a component page for it jet. But just have a look at the demo/index.html and the documentation below.
 
 ## Options
 
