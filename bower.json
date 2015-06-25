@@ -1,12 +1,15 @@
 {
   "name": "pk-datepicker",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Custom element to pick a date and a time. Created with polymer.",
   "license": "MIT",
-  "main": "dist/pk-datepicker.html",
+  "main": "pk-datepicker.html",
   "keywords": [
     "polymer",
-    "web-components"
+    "web-components",
+    "date",
+    "picker",
+    "calendar"
   ],
   "ignore": [
     "**/.*",
