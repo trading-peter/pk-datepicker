@@ -55,7 +55,12 @@ Example:
             @apply(--pk-datepicker-header-display-theme);
         }
 
-        [header] fa-awesome:hover {
+        [header] div.month-display > div:hover ::content [prev-month],
+        [header] div.month-display > div:hover ::content [next-month],
+        [header] div.year-display > div:hover ::content [prev-year],
+        [header] div.year-display > div:hover ::content [next-year],
+        [header] div.extended-display > div:hover ::content [go-selected],
+        [header] div.extended-display > div:hover ::content [go-today] {
             cursor: pointer;
             color: #BC5005;
             @apply(--pk-datepicker-header-icon-hover-theme);
@@ -70,6 +75,24 @@ Example:
         [header] .go-selected {
             cursor: pointer;
             @apply(--pk-datepicker-header-selected-theme);
+        }
+
+        [header] #currentYear,
+        [header] #currentMonth {
+            cursor: pointer;
+            @apply(--pk-datepicker-header-label-theme);
+        }
+
+        [header] #currentYear:hover,
+        [header] #currentMonth:hover {
+            cursor: pointer;
+            color: #BC5005;
+            @apply(--pk-datepicker-header-label-hover-theme);
+        }
+
+        [content] {
+            position: relative;
+            overflow: hidden;
         }
 
         table {
@@ -115,28 +138,85 @@ Example:
             @apply(--pk-datepicker-selected-theme);
         }
 
+        #yearList {
+            @apply(--layout-horizontal);
+            @apply(--layout-wrap);
+            @apply(--layout-fit);
+            overflow-y: auto;
+            @apply(--pk-datepicker-yearlist-theme);
+        }
+
+        #yearList.hidden {
+            display: none !important;
+        }
+
+        #yearList > div {
+            cursor: pointer;
+            margin: 5px;
+            @apply(--pk-datepicker-yearlist-item-theme);
+        }
+
+        #yearList > div:hover {
+            color: #BC5005;
+            @apply(--pk-datepicker-yearlist-item-hover-theme);
+        }
+
+        #monthList {
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout-wrap);
+            @apply(--layout-fit);
+            overflow-y: auto;
+            @apply(--pk-datepicker-monthlist-theme);
+        }
+
+        #monthList.hidden {
+            display: none !important;
+        }
+
+        #monthList > div {
+            cursor: pointer;
+            margin: 0 15px;
+            @apply(--pk-datepicker-monthlist-item-theme);
+        }
+
+        #monthList > div:hover {
+            color: #BC5005;
+            @apply(--pk-datepicker-monthlist-item-hover-theme);
+        }
     </style>
     <template>
         <div header>
             <div class="month-display">
-                <fa-awesome on-click="_prevMonthHandler" icon="chevron-left"></fa-awesome>
-                <span id="currentMonth">{{currentMonth}}</span>
-                <fa-awesome on-click="_nextMonthHandler" icon="chevron-right"></fa-awesome>
+                <div on-click="_prevMonthHandler"><content select="[prev-month]"></content></div>
+                <div on-click="_toggleMonthList" id="currentMonth">{{currentMonth}}</div>
+                <div on-click="_nextMonthHandler"><content select="[next-month]"></content></div>
             </div>
             <div class="year-display">
-                <fa-awesome on-click="_prevYearHandler" icon="chevron-left"></fa-awesome>
-                <span id="currentYear">{{date.year}}</span>
-                <fa-awesome on-click="_nextYearHandler" icon="chevron-right"></fa-awesome>
+                <div on-click="_prevYearHandler"><content select="[prev-year]"></content></div>
+                <div on-click="_toggleYearList" id="currentYear">{{date.year}}</div>
+                <div on-click="_nextYearHandler"><content select="[next-year]"></content></div>
             </div>
-            <div>
-                <fa-awesome on-click="_goSelectedHandler" class="go-selected" icon="dot-circle-o"></fa-awesome>
-                <fa-awesome on-click="_goTodayHandler" class="go-today" icon="calendar"></fa-awesome>
+            <div class="extended-display">
+                <div on-click="_goSelectedHandler"><content select="[go-selected]"></content></div>
+                <div on-click="_goTodayHandler"><content select="[go-today]"></content></div>
             </div>
         </div>
-        <div id="calendar" cellpadding="0" cellspacing="0"></div>
+        <div content>
+            <div id="calendar" cellpadding="0" cellspacing="0"></div>
+            <div id="yearList" class="hidden">
+                <template is="dom-repeat" items="{{yearList}}">
+                    <div on-click="_selectYear" class="year-item">{{item}}</div>
+                </template>
+            </div>
+            <div id="monthList" class="hidden">
+                <template is="dom-repeat" items="{{monthLabels}}">
+                    <div on-click="_selectMonth" class="month-item">{{item}}</div>
+                </template>
+            </div>
+        </div>
     </template>
 </dom-module>
-
 <script>
     Polymer({
         is: 'pk-datepicker',
@@ -162,6 +242,19 @@ Example:
             },
 
             /**
+             * Private internal property that holds the current month and year displayed.
+             */
+            showDate: {
+                type: Object,
+                value: {
+                    year: 0,
+                    month: 1,
+                    day: 1
+                },
+                readOnly: true
+            },
+
+            /**
              * The currently selected date.
              * Object => {{year: String, month: String, day: String}}
              */
@@ -176,6 +269,21 @@ Example:
                     }
                 },
                 observer: '_dateChanged'
+            },
+
+            /**
+             * Holds the list of the last 100 years.
+             */
+            yearList: {
+                type: Array,
+                value: function() {
+                    var list = [];
+                    var d = new Date();
+                    for (var i = d.getFullYear(), li = d.getFullYear() - 100; i > li; --i) {
+                        list.push(i);
+                    }
+                    return list;
+                }
             }
         },
 
@@ -199,12 +307,6 @@ Example:
          * @detail {{year: String, month: String, day: String}}
          */
 
-        _showDate: {
-            year: 0,
-            month: 1,
-            day: 1
-        },
-
         /**
          * Fires the `date-selected` event if some date was selected.
          */
@@ -218,8 +320,8 @@ Example:
                 e.target.classList.add('selected');
 
                 this.date = {
-                    year: this._showDate.year,
-                    month: this._showDate.month + 1,
+                    year: this.showDate.year,
+                    month: this.showDate.month + 1,
                     day: parseInt(e.target.textContent)
                 };
 
@@ -231,45 +333,44 @@ Example:
          * Show the next month.
          */
         _nextMonthHandler: function() {
-            this._showDate.month = this._showDate.month == 11 ? 0 : this._showDate.month + 1;
-            this._showDate.year = this._showDate.month <= 0 ? this._showDate.year + 1 : this._showDate.year;
+            this.showDate.month = this.showDate.month == 11 ? 0 : this.showDate.month + 1;
+            this.showDate.year = this.showDate.month <= 0 ? this.showDate.year + 1 : this.showDate.year;
 
-            this.notifyPath('date.year', this._showDate.year);
+            this.notifyPath('date.year', this.showDate.year);
 
-            this.currentMonth = this.monthLabels[this._showDate.month];
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**
          * Show the previous month.
          */
         _prevMonthHandler: function() {
-            this._showDate.month = this._showDate.month <= 0 ? 11 : this._showDate.month - 1;
-            this._showDate.year = this._showDate.month == 11 ? this._showDate.year - 1 : this._showDate.year;
+            this.showDate.month = this.showDate.month <= 0 ? 11 : this.showDate.month - 1;
+            this.showDate.year = this.showDate.month == 11 ? this.showDate.year - 1 : this.showDate.year;
 
-            this.notifyPath('date.year', this._showDate.year);
+            this.notifyPath('date.year', this.showDate.year);
 
-            this.currentMonth = this.monthLabels[this._showDate.month];
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
         },
-
 
         /**
          * Show the next year.
          */
         _nextYearHandler: function() {
-            this._showDate.year += 1;
-            this.notifyPath('date.year', this._showDate.year);
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.showDate.year += 1;
+            this.notifyPath('date.year', this.showDate.year);
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**
          * Show the previous year.
          */
         _prevYearHandler: function() {
-            this._showDate.year -= 1;
-            this.notifyPath('date.year', this._showDate.year);
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.showDate.year -= 1;
+            this.notifyPath('date.year', this.showDate.year);
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**
@@ -277,26 +378,111 @@ Example:
          */
         _goTodayHandler: function() {
             var date = new Date();
-            this._showDate.month = date.getMonth();
-            this._showDate.year = date.getFullYear();
+            this.showDate.month = date.getMonth();
+            this.showDate.year = date.getFullYear();
 
-            this.notifyPath('date.year', this._showDate.year);
+            this.notifyPath('date.year', this.showDate.year);
 
-            this.currentMonth = this.monthLabels[this._showDate.month];
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**
          * Switch view to month of selected day.
          */
         _goSelectedHandler: function() {
-            this._showDate.month = this.date.month;
-            this._showDate.year = this.date.year;
+            this.showDate.month = this.date.month;
+            this.showDate.year = this.date.year;
 
-            this.notifyPath('date.year', this._showDate.year);
+            this.notifyPath('date.year', this.showDate.year);
 
-            this.currentMonth = this.monthLabels[this._showDate.month];
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
+        },
+
+        /**
+         * Toggle visibility of the month selection list.
+         */
+        _toggleMonthList: function() {
+            if (!this.$.yearList.classList.contains('hidden')) {
+                this._hideYearList();
+            }
+
+            if (this.$.calendar.style.visibility != 'hidden') {
+                this._showMonthList();
+            } else {
+                this._hideMonthList();
+            }
+        },
+
+        /**
+         * Show month selection.
+         */
+        _showMonthList: function() {
+            this.$.calendar.style.visibility = 'hidden';
+            Polymer.dom(this.$.monthList).classList.remove('hidden');
+        },
+
+        /**
+         * Hide month selection.
+         */
+        _hideMonthList: function() {
+            Polymer.dom(this.$.monthList).classList.add('hidden');
+            this.$.calendar.style.visibility = 'visible';
+        },
+
+        /**
+         * Switch to the selected month.
+         */
+        _selectMonth: function(e) {
+            this._toggleMonthList();
+
+            this.showDate.month = e.model.index;
+            this.notifyPath('date.year', this.showDate.year);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
+        },
+
+        /**
+         * Toggle visibility of the year selection list.
+         */
+        _toggleYearList: function() {
+            if (!this.$.monthList.classList.contains('hidden')) {
+                this._hideMonthList();
+            }
+
+            if (this.$.calendar.style.visibility != 'hidden') {
+                this._showYearList();
+            } else {
+                this._hideYearList();
+            }
+        },
+
+        /**
+         * Show year selection list.
+         */
+        _showYearList: function() {
+            this.$.calendar.style.visibility = 'hidden';
+            Polymer.dom(this.$.yearList).classList.remove('hidden');
+        },
+
+        /**
+         * Hide year selection list.
+         */
+        _hideYearList: function() {
+            Polymer.dom(this.$.yearList).classList.add('hidden');
+            this.$.calendar.style.visibility = 'visible';
+        },
+
+        /**
+         * Switch to the selected year.
+         */
+        _selectYear: function(e) {
+            this._toggleYearList();
+
+            this.showDate.year = e.model.item;
+            this.notifyPath('date.year', this.showDate.year);
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**
@@ -326,12 +512,13 @@ Example:
             this.date.month = month;
             this.date.year = year;
             this.date.day = this.date.day != null ? day : null;
+            this._setShowDate({
+                month: month,
+                year: year
+            });
 
-            this._showDate.month = month;
-            this._showDate.year = year;
-
-            this.currentMonth = this.monthLabels[this._showDate.month];
-            this._genTable(this._showDate.year, this._showDate.month);
+            this.currentMonth = this.monthLabels[this.showDate.month];
+            this._genTable(this.showDate.year, this.showDate.month);
         },
 
         /**

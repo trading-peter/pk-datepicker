@@ -51,14 +51,29 @@
         <label for="dateSetter">Set value of the picker as JSON object string {"year":"2015", "month": "1", "day": "1"}: </label><br>
         <input type="text" id="dateSetter" value='{"year":"1985","month":"1","day":"6"}'/>
     </div>
-    <pk-datepicker></pk-datepicker>
+    <pk-datepicker>
+        <fa-awesome prev-month icon="chevron-left"></fa-awesome>
+        <fa-awesome next-month icon="chevron-right"></fa-awesome>
+        <fa-awesome prev-year icon="chevron-left"></fa-awesome>
+        <fa-awesome next-year icon="chevron-right"></fa-awesome>
+        <fa-awesome go-selected icon="dot-circle-o"></fa-awesome>
+        <fa-awesome go-today icon="calendar"></fa-awesome>
+    </pk-datepicker>
     <p>
         Here is a (badly) themed one.
     </p>
     <pk-datepicker
         class="themed"
-        month-labels='["Birthday!","Ski Time","Still Ski...","Spring","Warmer","Warm","Hot","Summer!","Cool","Cooler","Icy","X-Mas"]' date='{"year":"1985","month":"1","day":"6"}'
-        day-labels='["Su","Mo","Tu","We","Th","Fr","Sa"]'></pk-datepicker>
+        month-labels='["Birthday!","Ski Time","Still Ski...","Spring","Warmer","Warm","Hot","Summer!","Cool","Cooler","Icy","X-Mas"]'
+        date='{"year":"1985","month":"1","day":"6"}'
+        day-labels='["Su","Mo","Tu","We","Th","Fr","Sa"]'>
+        <fa-awesome prev-month icon="angle-double-left"></fa-awesome>
+        <fa-awesome next-month icon="angle-double-right"></fa-awesome>
+        <fa-awesome prev-year icon="angle-double-left"></fa-awesome>
+        <fa-awesome next-year icon="angle-double-right"></fa-awesome>
+        <fa-awesome go-selected icon="check"></fa-awesome>
+        <fa-awesome go-today icon="calendar-o"></fa-awesome>
+    </pk-datepicker>
     <script>
         var dateGetter= document.getElementById('dateGetter');
         var dateSetter = document.getElementById('dateSetter');
