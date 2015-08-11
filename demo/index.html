@@ -1,93 +1,101 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>&lt;pk-datepicker&gt;</title>
-    <script>//Polymer = {dom: 'shadow'};</script>
-    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="../../fa-awesome/fa-awesome.html">
-    <link rel="import" href="../pk-datepicker.html">
+  <meta charset="UTF-8">
+  <title>&lt;pk-datepicker&gt;</title>
+  <script>
+    Polymer = {dom: 'shadow'};
+  </script>
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="../../fa-awesome/fa-awesome.html">
+  <link rel="import" href="../pk-datepicker.html">
 
-    <style is="custom-style">
-        pk-datepicker {
-            width: 320px;
-            font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
-        }
+  <style is="custom-style">
+    pk-datepicker {
+      width: 320px;
+      font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+    }
 
-        .date-selector {
-            padding: 20px;
-        }
+    pk-datepicker fa-awesome {
+      --fa-awesome-icon-width: 16px;
+      --fa-awesome-icon-height: 16px;
+    }
 
-        input[type="text"] {
-            width: 300px;
-        }
+    .date-selector {
+      padding: 20px;
+    }
 
-        pk-datepicker.themed {
-            background-color: #c1c1c1;
+    input[type="text"] {
+      width: 300px;
+    }
 
-            --pk-datepicker-header-theme: {
-                background-color: #4285F4;
-                padding: 0 10px;
-                color: #fff;
-            };
+    pk-datepicker.themed {
+      background-color: #c1c1c1;
 
-            --pk-datepicker-today-theme: {
-                background-color: #dedede;
-                color: #000;
-            };
+      --pk-datepicker-header: {
+        background-color: #4285F4;
+        padding: 0 10px;
+        color: #fff;
+      };
 
-            --pk-datepicker-selected-theme: {
-                background-color: #fff;
-                color: #000;
-            };
-        }
-    </style>
+      --pk-datepicker-today: {
+        background-color: #dedede;
+        color: #000;
+      };
+
+      --pk-datepicker-selected: {
+        background-color: #fff;
+        color: #000;
+      };
+    }
+  </style>
 </head>
+
 <body>
-    <div class="date-selector">
-        <label for="dateGetter">Selected value of the picker: </label><br>
-        <input type="text" id="dateGetter"/>
-    </div>
-    <div class="date-selector">
-        <label for="dateSetter">Set value of the picker as JSON object string {"year":"2015", "month": "1", "day": "1"}: </label><br>
-        <input type="text" id="dateSetter" value='{"year":"1985","month":"1","day":"6"}'/>
-    </div>
-    <pk-datepicker>
-        <fa-awesome prev-month icon="chevron-left"></fa-awesome>
-        <fa-awesome next-month icon="chevron-right"></fa-awesome>
-        <fa-awesome prev-year icon="chevron-left"></fa-awesome>
-        <fa-awesome next-year icon="chevron-right"></fa-awesome>
-        <fa-awesome go-selected icon="dot-circle-o"></fa-awesome>
-        <fa-awesome go-today icon="calendar"></fa-awesome>
-    </pk-datepicker>
-    <p>
-        Here is a (badly) themed one.
-    </p>
-    <pk-datepicker
-        class="themed"
-        month-labels='["Birthday!","Ski Time","Still Ski...","Spring","Warmer","Warm","Hot","Summer!","Cool","Cooler","Icy","X-Mas"]'
-        date='{"year":"1985","month":"1","day":"6"}'
-        day-labels='["Su","Mo","Tu","We","Th","Fr","Sa"]'>
-        <fa-awesome prev-month icon="angle-double-left"></fa-awesome>
-        <fa-awesome next-month icon="angle-double-right"></fa-awesome>
-        <fa-awesome prev-year icon="angle-double-left"></fa-awesome>
-        <fa-awesome next-year icon="angle-double-right"></fa-awesome>
-        <fa-awesome go-selected icon="check"></fa-awesome>
-        <fa-awesome go-today icon="calendar-o"></fa-awesome>
-    </pk-datepicker>
-    <script>
-        var dateGetter= document.getElementById('dateGetter');
-        var dateSetter = document.getElementById('dateSetter');
-        var picker = document.querySelector('pk-datepicker');
+  <div class="date-selector">
+    <label for="dateGetter">Selected value of the picker: </label>
+    <br>
+    <input type="text" id="dateGetter" />
+  </div>
+  <div class="date-selector">
+    <label for="dateSetter">Set value of the picker as JSON object string {"year":"2015", "month": "1", "day": "1"}: </label>
+    <br>
+    <input type="text" id="dateSetter" value='{"year":"1985","month":"1","day":"6"}' />
+  </div>
+  <pk-datepicker>
+    <fa-awesome prev-month icon="fa:chevron-left"></fa-awesome>
+    <fa-awesome next-month icon="fa:chevron-right"></fa-awesome>
+    <fa-awesome prev-year icon="fa:chevron-left"></fa-awesome>
+    <fa-awesome next-year icon="fa:chevron-right"></fa-awesome>
+    <fa-awesome go-selected icon="fa:dot-circle-o"></fa-awesome>
+    <fa-awesome go-today icon="fa:calendar"></fa-awesome>
+  </pk-datepicker>
+  <p>
+    Here is a (badly) themed one.
+  </p>
+  <pk-datepicker class="themed" month-labels='["Birthday!","Ski Time","Still Ski...","Spring","Warmer","Warm","Hot","Summer!","Cool","Cooler","Icy","X-Mas"]' date='{"year":"1985","month":"1","day":"6"}' day-labels='["Su","Mo","Tu","We","Th","Fr","Sa"]'>
+    <fa-awesome prev-month icon="fa:angle-double-left"></fa-awesome>
+    <fa-awesome next-month icon="fa:angle-double-right"></fa-awesome>
+    <fa-awesome prev-year icon="fa:angle-double-left"></fa-awesome>
+    <fa-awesome next-year icon="fa:angle-double-right"></fa-awesome>
+    <fa-awesome go-selected icon="fa:check"></fa-awesome>
+    <fa-awesome go-today icon="fa:calendar-o"></fa-awesome>
+  </pk-datepicker>
+  <script>
+    var dateGetter = document.getElementById('dateGetter');
+    var dateSetter = document.getElementById('dateSetter');
+    var picker = document.querySelector('pk-datepicker');
 
-        dateSetter.addEventListener('change', function(e) {
-            var value = JSON.parse(dateSetter.value);
-            picker.date = value;
-        });
+    dateSetter.addEventListener('change', function(e) {
+      var value = JSON.parse(dateSetter.value);
+      picker.date = value;
+    });
 
-        picker.addEventListener('date-selected', function(e) {
-            dateGetter.value = JSON.stringify(e.detail);
-        });
-    </script>
+    picker.addEventListener('date-selected', function(e) {
+      dateGetter.value = JSON.stringify(e.detail);
+    });
+  </script>
 </body>
+
 </html>
