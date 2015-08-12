@@ -245,7 +245,9 @@ Polymer({
     */
     dayLabels: {
       type: Array,
-      value: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      value: function() {
+        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      }
     },
 
     /**
@@ -253,9 +255,11 @@ Polymer({
     */
     monthLabels: {
       type: Array,
-      value: ['January', 'February', 'March', 'April',
-      'May', 'June', 'July', 'August', 'September',
-      'October', 'November', 'December']
+      value: function() {
+        return ['January', 'February', 'March', 'April',
+        'May', 'June', 'July', 'August', 'September',
+        'October', 'November', 'December'];
+      }
     },
 
     /**
@@ -263,10 +267,12 @@ Polymer({
     */
     showDate: {
       type: Object,
-      value: {
-        year: 0,
-        month: 1,
-        day: 1
+      value: function() {
+        return {
+          year: 0,
+          month: 1,
+          day: 1
+        };
       },
       readOnly: true
     },
