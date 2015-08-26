@@ -348,7 +348,7 @@ Polymer({
         day: parseInt(e.target.textContent)
       };
 
-      this.fire('date-selected', { year: this.date.year, month: this.date.month + 1, day: parseInt(e.target.textContent) });
+      this.fire('date-selected', { year: this.date.year, month: this.date.month, day: parseInt(e.target.textContent) });
     }
   },
 
@@ -414,7 +414,7 @@ Polymer({
   * Switch view to month of selected day.
   */
   _goSelectedHandler: function() {
-    this.showDate.month = this.date.month;
+    this.showDate.month = this.date.month - 1;
     this.showDate.year = this.date.year;
 
     this.notifyPath('date.year', this.showDate.year);
@@ -514,17 +514,17 @@ Polymer({
   */
   _dateChanged: function(newDate) {
     var date = new Date();
-    var month = parseInt(newDate.month) - 1 || 0;
+    var month = parseInt(newDate.month) || 1;
     var year = parseInt(newDate.year) || date.getFullYear();
     var day = parseInt(newDate.day) || 1;
 
     // Test if the date exists.
-    var testDate = new Date(year, month, day);
+    var testDate = new Date(year, month - 1, day);
     if (day != testDate.getDate()) {
       day = testDate.getDate();
     }
 
-    if (month != testDate.getMonth()) {
+    if (month - 1 != testDate.getMonth()) {
       month = testDate.getMonth();
     }
 
@@ -535,8 +535,9 @@ Polymer({
     this.date.month = month;
     this.date.year = year;
     this.date.day = this.date.day != null ? day : null;
-    this._setShowDate({
-      month: month,
+
+  	this._setShowDate({
+      month: month - 1,
       year: year
     });
 
@@ -589,7 +590,7 @@ Polymer({
         if (day <= monthLength && (i2 > 0 || j >= startingDay)) {
           var classes = [];
 
-          if (day == this.date.day && month == this.date.month && year == this.date.year) {
+          if (day == this.date.day && month == this.date.month - 1 && year == this.date.year) {
             classes.push('selected');
           }
 
