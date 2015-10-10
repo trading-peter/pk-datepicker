@@ -178,6 +178,10 @@ Example:
     @apply(--pk-datepicker-yearlist-item-hover);
   }
 
+  #yearList > div.year-current {
+    @apply(--pk-datepicker-yearlist-item-current);
+  }
+
   #monthList {
     @apply(--layout-horizontal);
     @apply(--layout-center);
@@ -223,7 +227,7 @@ Example:
     <div id="calendar" cellpadding="0" cellspacing="0"></div>
     <div id="yearList" class="hidden">
       <template is="dom-repeat" items="{{yearList}}">
-        <div on-click="_selectYear" class="year-item">{{item}}</div>
+        <div on-click="_selectYear" class$="[[_yearClass(item)]]">{{item}}</div>
       </template>
     </div>
     <div id="monthList" class="hidden">
@@ -295,22 +299,36 @@ Polymer({
     },
 
     /**
-    * Holds the list of the last 100 years.
-    */
-    yearList: {
-      type: Array,
-      value: function() {
-        var list = [];
-        var d = new Date();
-        for (var i = d.getFullYear(), li = d.getFullYear() - 100; i > li; --i) {
-          list.push(i);
-        }
-        return list;
-      }
+     * How many future years the selection list should show.
+     */
+    yearsFwd: {
+      type: Number,
+      value: 0
+    },
+
+    /**
+     * How many past years the selection list should show.
+     */
+    yearsBack: {
+      type: Number,
+      value: 100
     }
   },
 
   // Element Lifecycle
+
+  ready: function() {
+    var d = new Date();
+    var list = [];
+    this._currYear = d.getFullYear()
+    var begin = this._currYear - this.yearsBack - 1;
+    var end = this._currYear + this.yearsFwd;
+    for (var i = end; i > begin; --i) {
+      list.push(i);
+    }
+
+    this.yearList = list;
+  },
 
   attached: function() {
     this.$.calendar.addEventListener('click', this._selectionHandler.bind(this));
@@ -329,6 +347,14 @@ Polymer({
   * @event date-selected
   * @detail {{year: String, month: String, day: String}}
   */
+
+ _yearClass: function(item) {
+   var cls = 'year-item';
+   if (item == this._currYear) {
+     cls += ' year-current';
+   }
+   return cls;
+ },
 
   /**
   * Fires the `date-selected` event if some date was selected.
