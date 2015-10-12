@@ -27,6 +27,32 @@ Example:
 </pk-datepicker>
 ```
 
+Supported css stylings
+
+Name | Type | Default value | Description
+:---|:---|:---|:---
+--pk-datepicker-header | mixin | none | Used to style the calendar header.
+--pk-datepicker-header-parts | mixin | none | Styling mixin for the 3 containers of the header holding the month, year selector and the icons.
+--pk-datepicker-header-display | mixin | none | Styling mixin for the month and year selector controls in the header.
+--pk-datepicker-header-icon-hover | mixin | none | Styling of the icons if the mouse hovers over them.
+--pk-datepicker-header-today | mixin | none |
+--pk-datepicker-header-selected | mixin | none |
+--pk-datepicker-header-label | mixin | none |
+--pk-datepicker-header-label-hover | mixin | none |
+--pk-datepicker-cell | mixin | none |
+--pk-datepicker-number | mixin | none |
+--pk-datepicker-number-hover | mixin | none |
+--pk-datepicker-today | mixin | none |
+--pk-datepicker-selected | mixin | none |
+--pk-datepicker-yearlist | mixin | none |
+--pk-datepicker-yearlist-item | mixin | none |
+--pk-datepicker-yearlist-item-hover | mixin | none |
+--pk-datepicker-yearlist-item-current | mixin | none | Used to style the current year in the selection list.
+--pk-datepicker-yearlist-item-selected | mixin | none | Used to style the currently selected year in the selection list.
+--pk-datepicker-monthlist | mixin | none |
+--pk-datepicker-monthlist-item | mixin | none |
+--pk-datepicker-monthlist-item-hover | mixin | none |
+
 @group GUI Elements
 @element pk-datepicker
 @demo demo/index.html
@@ -182,6 +208,10 @@ Example:
     @apply(--pk-datepicker-yearlist-item-current);
   }
 
+  #yearList > div.year-selected {
+    @apply(--pk-datepicker-yearlist-item-selected);
+  }
+
   #monthList {
     @apply(--layout-horizontal);
     @apply(--layout-center);
@@ -315,6 +345,10 @@ Polymer({
     }
   },
 
+  observers: [
+    '_showDateYearChanged(showDate.year)'
+  ],
+
   // Element Lifecycle
 
   ready: function() {
@@ -353,6 +387,9 @@ Polymer({
    if (item == this._currYear) {
      cls += ' year-current';
    }
+   if (item == this.date.year) {
+     cls += ' year-selected';
+   }
    return cls;
  },
 
@@ -382,8 +419,8 @@ Polymer({
   * Show the next month.
   */
   _nextMonthHandler: function() {
-    this.showDate.month = this.showDate.month == 11 ? 0 : this.showDate.month + 1;
-    this.showDate.year = this.showDate.month <= 0 ? this.showDate.year + 1 : this.showDate.year;
+    this.set('showDate.month', this.showDate.month == 11 ? 0 : this.showDate.month + 1);
+    this.set('showDate.year', this.showDate.month <= 0 ? this.showDate.year + 1 : this.showDate.year);
 
     this.notifyPath('date.year', this.showDate.year);
 
@@ -391,12 +428,31 @@ Polymer({
     this._genTable(this.showDate.year, this.showDate.month);
   },
 
+  _showDateYearChanged: function() {
+    if (!this.yearList) return;
+
+    var year = this.showDate.year;
+    var oldNode = Polymer.dom(this.$.yearList).querySelector('.year-selected');
+    if (oldNode) {
+      this.toggleClass('year-selected', false, oldNode);
+    }
+    for (var i = 0, li = this.yearList.length; i < li; ++i) {
+      if (year == this.yearList[i]) {
+        var node = this.$.yearList.children[i];
+        if (node) {
+          this.toggleClass('year-selected', true, node);
+        }
+        break;
+      }
+    }
+  },
+
   /**
   * Show the previous month.
   */
   _prevMonthHandler: function() {
-    this.showDate.month = this.showDate.month <= 0 ? 11 : this.showDate.month - 1;
-    this.showDate.year = this.showDate.month == 11 ? this.showDate.year - 1 : this.showDate.year;
+    this.set('showDate.month', this.showDate.month <= 0 ? 11 : this.showDate.month - 1);
+    this.set('showDate.year', this.showDate.month == 11 ? this.showDate.year - 1 : this.showDate.year);
 
     this.notifyPath('date.year', this.showDate.year);
 
@@ -408,7 +464,7 @@ Polymer({
   * Show the next year.
   */
   _nextYearHandler: function() {
-    this.showDate.year += 1;
+    this.set('showDate.year', this.showDate.year += 1);
     this.notifyPath('date.year', this.showDate.year);
     this._genTable(this.showDate.year, this.showDate.month);
   },
@@ -417,7 +473,7 @@ Polymer({
   * Show the previous year.
   */
   _prevYearHandler: function() {
-    this.showDate.year -= 1;
+    this.set('showDate.year', this.showDate.year -= 1);
     this.notifyPath('date.year', this.showDate.year);
     this._genTable(this.showDate.year, this.showDate.month);
   },
@@ -529,7 +585,7 @@ Polymer({
   _selectYear: function(e) {
     this._toggleYearList();
 
-    this.showDate.year = e.model.item;
+    this.set('showDate.year', e.model.item);
     this.notifyPath('date.year', this.showDate.year);
     this._genTable(this.showDate.year, this.showDate.month);
   },
