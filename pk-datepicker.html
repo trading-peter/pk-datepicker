@@ -371,10 +371,10 @@ Polymer({
       this.date = {
         year: this.showDate.year,
         month: this.showDate.month + 1,
-        day: parseInt(e.target.textContent)
+        day: parseInt(e.target.textContent || e.target.innerText)
       };
 
-      this.fire('date-selected', { year: this.date.year, month: this.date.month, day: parseInt(e.target.textContent) });
+      this.fire('date-selected', { year: this.date.year, month: this.date.month, day: this.date.day });
     }
   },
 
@@ -562,7 +562,7 @@ Polymer({
     this.date.year = year;
     this.date.day = this.date.day != null ? day : null;
 
-  	this._setShowDate({
+    this._setShowDate({
       month: month - 1,
       year: year
     });
